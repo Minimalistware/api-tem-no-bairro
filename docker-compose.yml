@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  nosql:
+    image: mongodb/mongodb-community-server
+    container_name: docker-nosql
+    restart: unless-stopped
+    ports:
+      - '4000:27017'
+    volumes:
+      - nosql-data:/data/db
+    networks:
+      - app-net
+
+  api:
+    build:
+      dockerfile: ./dockerfile
+    container_name: docker-api
+    ports:
+      - '3000:3000'
+    depends_on:
+      - nosql
+    networks:
+      - app-net
+    environment:
+      - NODE_ENV=production
+
+volumes:
+  nosql-data:
+
+networks:
+  app-net:
+    driver: bridge

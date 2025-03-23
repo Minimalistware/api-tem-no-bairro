@@ -10,9 +10,12 @@ import { JwtService } from '@nestjs/jwt';
 
 import { Request } from 'express';
 
-import { RequiredPermissions } from 'src/utils/required.permissions.decorator';
+import { RequiredPermissions } from 'src/decorators/required.permissions.decorator';
 
 @Injectable()
+/* eslint-disable @typescript-eslint/no-unsafe-assignment*/
+/* eslint-disable @typescript-eslint/no-unsafe-member-access*/
+/* eslint-disable @typescript-eslint/no-unsafe-argument*/
 export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,

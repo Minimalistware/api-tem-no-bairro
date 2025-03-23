@@ -7,11 +7,11 @@ import { FirstClient } from './schema/first-client.schema';
 @Injectable()
 export class FirstClientService {
   constructor(
-    @InjectModel(FirstClient.name) private FirstClientModel: Model<FirstClient>,
+    @InjectModel(FirstClient.name) private firstClientModel: Model<FirstClient>,
   ) {}
 
   async findOne(email: string): Promise<FirstClient> {
-    const result = await this.FirstClientModel.findOne({ email });
+    const result = await this.firstClientModel.findOne({ email });
 
     if (result === null) {
       throw new NotFoundException(`FirstClient ${email} not found`);
@@ -21,11 +21,11 @@ export class FirstClientService {
   }
 
   async findSome(email: string): Promise<{ _id: Types.ObjectId } | null> {
-    const result = await this.FirstClientModel.exists({ email });
+    const result = await this.firstClientModel.exists({ email });
     return result;
   }
 
   async create(FirstClient: FirstClient): Promise<FirstClient> {
-    return this.FirstClientModel.create(FirstClient);
+    return this.firstClientModel.create(FirstClient);
   }
 }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
@@ -7,8 +7,9 @@ import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 
 import { Connection } from 'mongoose';
 
-import { AuthModule } from './auth/auth.module';
-import { FirstClientModule } from './first-client/first-client.module';
+import { AuthModule } from './app/auth/auth.module';
+import { FirstClientModule } from './app/first-client/first-client.module';
+import { SeederModule } from './helpers/helper.module';
 
 @Module({
   imports: [
@@ -20,11 +21,17 @@ import { FirstClientModule } from './first-client/first-client.module';
     }),
     MongooseModule.forRoot(process.env.DATABASE_URI || '', {
       onConnectionCreate: (connection: Connection) => {
-        connection.on('connected', () => console.log('🟢 connected'));
-        connection.on('error', () => console.log('🔴 error'));
+        const logger = new Logger(MongooseModule.name);
+        connection.on('connected', () =>
+          logger.log('🟢 connected to the database'),
+        );
+        connection.on('error', () =>
+          logger.log('🔴 while connecting to the database'),
+        );
         return connection;
       },
     }),
+    SeederModule,
   ],
   providers: [
     {

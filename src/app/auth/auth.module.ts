@@ -4,7 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { JwtModule } from '@nestjs/jwt';
 
-import { FirstClientModule } from 'src/first-client/first-client.module';
+import { FirstClientModule } from 'src/app/first-client/first-client.module';
 
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
@@ -15,7 +15,7 @@ import { AuthController } from './auth.controller';
     FirstClientModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('SECRET'),
         signOptions: { expiresIn: configService.get<string>('EXPIRES_IN') },
       }),

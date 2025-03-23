@@ -4,17 +4,23 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 import { AppModule } from './app.module';
-import { HttpExceptionFilter } from './utils/http-exception.filter';
-import { DtoValidationPipe } from './utils/dto.validation.pipe';
+import { HttpExceptionFilter } from './filters/http-exception.filter';
+import { DtoValidationPipe } from './pipes/dto.validation.pipe';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { SeederService } from './helpers/seeder.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    logger: new ConsoleLogger({
-      prefix: 'api',
-      json: true,
-    }),
+  const logger = new ConsoleLogger({
+    prefix: 'api',
+    json: true,
   });
+
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger,
+  });
+
+  const seeder = app.get(SeederService);
+  await seeder.seed();
 
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(new DtoValidationPipe());
@@ -30,6 +36,8 @@ async function bootstrap() {
   SwaggerModule.setup('/', app, documentFactory);
 
   await app.listen(process.env.PORT ?? 3000);
-  console.log(`🚀 application is running on: ${await app.getUrl()}`);
+
+  logger.log(`🚀 application is running on: ${await app.getUrl()}`);
 }
+
 bootstrap();

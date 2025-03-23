@@ -6,8 +6,9 @@ import {
 import { JwtService } from '@nestjs/jwt';
 
 import * as bcrypt from 'bcrypt';
-import { FirstClientService } from 'src/first-client/first-client.service';
-import { FirstClient } from 'src/first-client/schema/first-client.schema';
+
+import { FirstClientService } from 'src/app/first-client/first-client.service';
+import { FirstClient } from 'src/app/first-client/schema/first-client.schema';
 
 @Injectable()
 export class AuthService {
@@ -20,23 +21,23 @@ export class AuthService {
     email: string,
     password: string,
   ): Promise<{ access_token: string }> {
-    const FirstClient = await this.FirstClientService.findOne(email);
+    const firstClient = await this.FirstClientService.findOne(email);
 
-    if (!FirstClient) {
+    if (!firstClient) {
       throw new UnauthorizedException();
     }
 
-    const isMatch = await bcrypt.compare(password, FirstClient.password);
+    const isMatch = await bcrypt.compare(password, firstClient.passwordHash);
 
     if (!isMatch) {
       throw new UnauthorizedException();
     }
 
     const payload = {
-      sub: FirstClient.id,
-      email: FirstClient.email,
-      name: FirstClient.name,
-      permitions: FirstClient.permitions,
+      sub: firstClient.id,
+      email: firstClient.email,
+      name: firstClient.userName,
+      permitions: firstClient.permitions,
     };
 
     return {
@@ -49,7 +50,7 @@ export class AuthService {
     password: string,
     name: string,
   ): Promise<{ access_token: string }> {
-    let FirstClientExists = await this.FirstClientService.findSome(email);
+    const FirstClientExists = await this.FirstClientService.findSome(email);
 
     if (FirstClientExists) {
       throw new ConflictException();

@@ -8,8 +8,11 @@ import {
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 
-
 @Injectable()
+/* eslint-disable @typescript-eslint/no-unsafe-assignment*/
+/* eslint-disable @typescript-eslint/no-unsafe-return*/
+/* eslint-disable @typescript-eslint/no-unsafe-argument*/
+/* eslint-disable @typescript-eslint/no-unsafe-function-type*/
 export class DtoValidationPipe implements PipeTransform<any> {
   async transform(value: any, { metatype }: ArgumentMetadata) {
     if (!metatype || !this.toValidate(metatype)) {
@@ -22,7 +25,7 @@ export class DtoValidationPipe implements PipeTransform<any> {
       );
     }
 
-    const object = plainToInstance(metatype, value);    
+    const object = plainToInstance(metatype, value);
     const errors = await validate(object);
 
     if (errors.length > 0) {

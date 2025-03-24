@@ -16,12 +16,11 @@ export class SeederService {
   }
 
   async seed(): Promise<void> {
-    const isDevelopment = process.env.NODE_ENV || 'development';
+    const canSeed = process.env.NODE_ENV !== 'production';
     const isEmpty = (await this.firstClientModel.exists({})) === null;
 
-    if (isDevelopment && isEmpty) {
+    if (canSeed && isEmpty) {
       const saltOrRounds = await bcrypt.genSalt();
-
       const firstClients = [
         {
           _id: '67e029e3887f1b1e1c8a6309',
@@ -82,5 +81,10 @@ export class SeederService {
       await this.firstClientModel.insertMany(firstClients);
       this.logger.log(`✔️  database seeded with ${FirstClient.name}s`);
     }
+  }
+
+  async tear(): Promise<void> {
+    await this.firstClientModel.deleteMany();
+    this.logger.log(`✔️  database teared down`);
   }
 }
